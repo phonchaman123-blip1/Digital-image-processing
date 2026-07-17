@@ -12,10 +12,8 @@ def onChange(x):
     if x == 0: 
         x = 1
 
-    _, thresh = cv.threshold(img, x, 255, cv.THRESH_BINARY)
-    
+    ch1 = img.copy()
     ch2 = img_negative.copy()
-    
     ch3 = img_log.copy()
     
     gamma = x / 100.0 
@@ -23,18 +21,22 @@ def onChange(x):
     s = 255 * (r_power ** gamma)
     ch4 = np.array(s, dtype=np.uint8)
     
-    cv.putText(thresh, f"Binary (Threshold: {x})", (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, 255, 2)
+    cv.putText(ch1, "Original", (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, 255, 2)
     cv.putText(ch2, "Negative", (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, 0, 2)
     cv.putText(ch3, "Log Transformed", (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, 255, 2)
     cv.putText(ch4, f"Power-law (Gamma: {gamma:.2f})", (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, 255, 2)
     
-    row1 = np.hstack((thresh, ch2))
+    row1 = np.hstack((ch1, ch2))
     row2 = np.hstack((ch3, ch4))
     grid_all = np.vstack((row1, row2))
     
     cv.imshow('Image Transformations with Trackbar', grid_all)
 
-cv.namedWindow('Image Transformations with Trackbar')
+
+cv.namedWindow('Image Transformations with Trackbar', cv.WINDOW_NORMAL)
+
+cv.resizeWindow('Image Transformations with Trackbar', 960, 720)
+
 cv.createTrackbar('Value (X)', 'Image Transformations with Trackbar', 20, 255, onChange)
 
 onChange(20)
